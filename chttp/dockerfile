@@ -1,0 +1,3 @@
+FROM grpc/cxx:latest
+WORKDIR /code
+COPY . .
