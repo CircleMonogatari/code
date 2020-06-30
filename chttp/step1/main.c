@@ -15,6 +15,21 @@
 #define SERVER_PORT 6666
 #define bzero(x, len) (memset((x),'\0', (len)), (void)0)
 
+
+char* textFileRead(char* filename)
+{
+  char* text;
+  FILE *pf = fopen(filename,"r");
+  fseek(pf,0,SEEK_END);
+  long lSize = ftell(pf);
+  // 用完后需要将内存free掉
+  text=(char*)malloc(lSize+1);
+  rewind(pf); 
+  fread(text,sizeof(char),lSize,pf);
+  text[lSize] = '\0';
+  return text;
+}
+
 int main(int argc, char const *argv[])
 {
     //监听套接字
@@ -27,6 +42,7 @@ int main(int argc, char const *argv[])
     int client;
 
     char buffer[200];
+    char* data;
     
     int hello_len = 0;
 
@@ -91,18 +107,21 @@ int main(int argc, char const *argv[])
 
         /* 发送响应给客户端 */
 
-        char buf[1024];
-        sprintf(buf, "HTTP/1.0 200 OK\r\n");
-        send(client, buf, strlen(buf), 0);
-        // strcpy(buf, SERVER_STRING);
-        // send(client_fd, buf, strlen(buf), 0);
-        sprintf(buf, "Content-Type: text/html\r\n");
-        send(client, buf, strlen(buf), 0);
-        strcpy(buf, "\r\n");
-        send(client, buf, strlen(buf), 0);
-        sprintf(buf, "Hello World\r\n");
-        send(client, buf, strlen(buf), 0);
+        // char buf[1024];
+        // sprintf(buf, "HTTP/1.0 200 OK\r\n");
+        // send(client, buf, strlen(buf), 0);
+        // // strcpy(buf, SERVER_STRING);
+        // // send(client_fd, buf, strlen(buf), 0);
+        // sprintf(buf, "Content-Type: text/html\r\n");
+        // send(client, buf, strlen(buf), 0);
+        // strcpy(buf, "\r\n");
+        // send(client, buf, strlen(buf), 0);
+        // sprintf(buf, "Hello World\r\n");
+        // send(client, buf, strlen(buf), 0);
 
+        data = textFileRead("./response.txt");
+        send(client,data,strlen(data),0);
+        free(data);
 
         //回发数据完毕
         printf((char *) "--------------回发数据完毕-------------\n");
